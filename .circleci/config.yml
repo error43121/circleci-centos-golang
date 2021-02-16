@@ -1,30 +1,13 @@
-version: 2
-jobs:
-  build:
-    docker:
-      - image: docker:17.06.0-git
-    steps:
-      - setup_remote_docker
-      - checkout
-      - run:
-          name: Build Docker image
-          command: docker build -t scholzj/circleci-centos-golang:circle .
-      - deploy:
-          name: Tag docker images
-          command: |
-            docker tag scholzj/circleci-centos-golang:circle docker.io/scholzj/circleci-centos-golang:centos7-go1.13.0
-            docker tag scholzj/circleci-centos-golang:circle docker.io/scholzj/circleci-centos-golang:latest
-      - deploy:
-          name: Login to Docker Hub
-          command: docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD"
-      - deploy:
-          name: Push docker images
-          command: |
-            docker push scholzj/circleci-centos-golang:centos7-go1.13.0
-            docker push scholzj/circleci-centos-golang:latest
+# Use the latest 2.1 version of CircleCI pipeline process engine. See: https://circleci.com/docs/2.0/configuration-reference
+version: 2.1
+# Use a package of configuration called an orb.
+orbs:
+  # Declare a dependency on the welcome-orb
+  welcome: circleci/welcome-orb@0.4.1
+# Orchestrate or schedule a set of jobs
 workflows:
-  version: 2
-  build-workflow:
+  # Name the workflow "welcome"
+  welcome:
+    # Run the welcome/run job in its own container
     jobs:
-      - build:
-            context: org-global
+      - welcome/run
